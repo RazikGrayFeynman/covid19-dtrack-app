@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:convert/convert.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._private();
@@ -26,29 +29,43 @@ class DatabaseHelper {
       databasePath,
       version: 1,
       onCreate: (db, version) {
-        return db.execute(
-          'CREATE TABLE test(id INTEGER PRIMARY KEY, name TEXT)'
-        );
+        db.execute('CREATE TABLE devices_seen(id INTEGER PRIMARY KEY, device_id BLOB UNIQUE)');
       }
     );
   }
+
+  Future<void> resetDatabase() async {
+    var databasePath = join(await getDatabasesPath(), 'main.db');
+    await deleteDatabase(databasePath);
+  }
 }
 
-class TestObject {
-  
-  TestObject();
+class DevicesSeen {
+  final Uint8List deviceId;
 
-  Future<void> insert() async {
+  DevicesSeen(this.deviceId);
+
+  addToDatabase() async {
+    var database = await DatabaseHelper().database;
+    try {
+      await database.insert('devices_seen', {'device_id' : deviceId});
+    } catch(e) {
+      print("error");
+    }
+  }
+}
+
+class SuspectedDevice {
+  final String deviceId;
+  final bool diagnosedOrSuspected;
+
+  SuspectedDevice(this.deviceId, this.diagnosedOrSuspected);
+
+  addToDatabase() async {
     var database = await DatabaseHelper().database;
     database.transaction((txn) async {
-      txn.execute('INSERT INTO test(name) VALUES (?)', ['anmol']);
+      txn.rawInsert('INSERT INTO devices_susp(device_id, diag_or_susp) VALUES (?,?)', 
+        [hex.decode(deviceId), diagnosedOrSuspected ? 1 : 0]);
     });
-  }
-
-  Future<void> printNames() async {
-    var database = await DatabaseHelper().database;
-    var names = await database.rawQuery('SELECT * FROM test');
-    var nameList = names.map((e) => e['name']).toList();
-    print(nameList);
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:location/location.dart';
+import 'database.dart';
 
 class ServiceManager {
   static final ServiceManager _instance = ServiceManager._internal();
@@ -21,7 +22,7 @@ class ServiceManager {
 }
 
 class BluetoothManager {
-  static final channel = MethodChannel('bluetoothManager/channel1');
+  static final channel = MethodChannel('bluetoothManager/methodChannel1');
 
   startAdvertise() async {
     if (defaultTargetPlatform == TargetPlatform.android) {
@@ -34,7 +35,12 @@ class BluetoothManager {
 
   startScanning() async {
     if (defaultTargetPlatform == TargetPlatform.android) {
-      await channel.invokeMethod("startBluetoothScanning");
+      EventChannel e = EventChannel('events');
+      var s = e.receiveBroadcastStream();
+      await s.forEach((e) async {
+        var newDevice = DevicesSeen(e);
+        newDevice.addToDatabase();
+      });
     }
     else if (defaultTargetPlatform == TargetPlatform.iOS) {
       print("not implemented");
