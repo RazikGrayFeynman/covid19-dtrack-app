@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'services.dart';
 
 void main() async {
   runApp(MyApp());
@@ -66,6 +68,14 @@ class DashboardPage extends StatefulWidget {
 class DashboardPageState extends State<DashboardPage> {
   @override
   initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      var servicesManager = ServiceManager();
+      try {
+        await servicesManager.startAllServices();
+      } on PlatformException catch(e) {
+        print(e);
+      }
+    });
     super.initState();
   }
 
