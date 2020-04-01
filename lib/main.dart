@@ -256,7 +256,7 @@ class DashboardPageState extends State<DashboardPage> {
               crossAxisCount: 2,
               children: <Widget>[
                 MainGridElement('Services Status', StatusPage(), Icons.bluetooth, Colors.grey),
-                MainGridElement('Data Stored', DummyPage(), Icons.archive, Colors.grey),
+                MainGridElement('Data Stored', DataStoragePage(), Icons.archive, Colors.grey),
                 MainGridElement('About', DummyPage(), Icons.info, Colors.grey),
                 MainGridElement('Help!', DummyPage(), Icons.help, Colors.grey),
               ]
@@ -329,6 +329,50 @@ class StatusPageState extends State<StatusPage> {
                       child: !data.hasData ? Text('Device ID : Loading...') : Text('Device ID : ' + data.data.getString('device_id') ?? 'Not inited')
                     );
                   } 
+                )
+              ]
+            )
+          )
+        ]
+      )
+    );
+  }
+}
+
+class DataStoragePage extends StatefulWidget {
+  @override
+  DataStoragePageStatus createState() => DataStoragePageStatus();
+}
+
+class DataStoragePageStatus extends State<DataStoragePage> {
+  int _numDevices = 0;
+
+  initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((e) async {
+      var database = await DatabaseHelper().database;
+      var numDevices = (await database.rawQuery('SELECT COUNT(*) FROM devices_seen'))[0]['COUNT(*)'];
+      setState (() => _numDevices = numDevices);
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Data Stored', style: TextStyle(fontSize: 16)),
+        backgroundColor: Colors.grey
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Card(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Padding(child: Text('Bluetooth', style: TextStyle(fontSize: 18)), padding: EdgeInsets.all(16)),
+                Padding(
+                  padding: EdgeInsets.only(left: 16, bottom: 16),
+                  child: Text('Number of devices seen : ' + _numDevices.toString())
                 )
               ]
             )
