@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:location/location.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'database.dart';
 
 class ServiceManager {
@@ -26,7 +27,8 @@ class BluetoothManager {
 
   startAdvertise() async {
     if (defaultTargetPlatform == TargetPlatform.android) {
-      await channel.invokeMethod("startBluetoothAdvertising");
+      var deviceId = (await SharedPreferences.getInstance()).getString('device_id');
+      await channel.invokeMethod("startBluetoothAdvertising", deviceId);
     } 
     else if (defaultTargetPlatform == TargetPlatform.iOS) {
       print("not implemented");

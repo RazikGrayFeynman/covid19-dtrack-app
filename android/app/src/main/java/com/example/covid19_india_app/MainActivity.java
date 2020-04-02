@@ -37,7 +37,7 @@ public class MainActivity extends FlutterActivity {
     .setMethodCallHandler(
       (call, result) -> {
         if(call.method.equals("startBluetoothAdvertising")) {
-          bluetoothManager.startAdvertising(result);
+          bluetoothManager.startAdvertising(result, call.arguments);
         }
       }
     );
@@ -73,7 +73,9 @@ class DataConverter {
 }
 
 class BluetoothManager {
-  void startAdvertising(MethodChannel.Result result) {
+  void startAdvertising(MethodChannel.Result result, Object argument) {
+    String deviceId = argument.toString();
+    System.out.println(deviceId);
     BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
     BluetoothLeAdvertiser advertiser = adapter.getBluetoothLeAdvertiser();
     if(advertiser == null) {
@@ -86,7 +88,7 @@ class BluetoothManager {
       .setConnectable(false)
       .build();
     ParcelUuid uuid = new ParcelUuid(UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb"));
-    byte[] data = DataConverter.hexStringToByteArray("7629497b20bb5e8f");
+    byte[] data = DataConverter.hexStringToByteArray(deviceId);
     AdvertiseData advertiseData = new AdvertiseData.Builder()
       .setIncludeDeviceName(false)
       .addServiceUuid(uuid)

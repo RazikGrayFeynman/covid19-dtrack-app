@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:convert/convert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -355,6 +356,7 @@ class StatusPageState extends State<StatusPage> {
                       child: !data.hasData ? Text('Device ID : Loading...') : Text('Device ID : ' + data.data.getString('device_id') ?? 'Not inited')
                     );
                   } 
+                ,
                 )
               ]
             )
@@ -372,13 +374,19 @@ class DataStoragePage extends StatefulWidget {
 
 class DataStoragePageStatus extends State<DataStoragePage> {
   int _numDevices = 0;
+  List<String> _deviceIdStrings = [];
 
   initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((e) async {
       var database = await DatabaseHelper().database;
       var numDevices = (await database.rawQuery('SELECT COUNT(*) FROM devices_seen'))[0]['COUNT(*)'];
-      setState (() => _numDevices = numDevices);
+      var devices = (await database.rawQuery('SELECT * from devices_seen'));
+      var deviceIdStrings = devices.map((e) => hex.encode(e['device_id'])).toList();
+      setState (() {
+        _numDevices = numDevices;
+        _deviceIdStrings = deviceIdStrings;
+      });
     });
   }
   @override
@@ -399,6 +407,12 @@ class DataStoragePageStatus extends State<DataStoragePage> {
                 Padding(
                   padding: EdgeInsets.only(left: 16, bottom: 16),
                   child: Text('Number of devices seen : ' + _numDevices.toString())
+                ),
+                Container(
+                  height: 200,
+                  child: ListView(
+                    children: _deviceIdStrings.map((e) => Padding(padding: EdgeInsets.only(left: 16), child: Text(e))).toList()
+                  )
                 )
               ]
             )

@@ -50,7 +50,7 @@ class DevicesSeen {
     try {
       await database.insert('devices_seen', {'device_id' : deviceId});
     } catch(e) {
-      print("error");
+      print("Already exists");
     }
   }
 }
