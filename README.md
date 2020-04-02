@@ -11,7 +11,7 @@ app to aid the contact tracing process. Some of the salient features are -
 1. Built in Flutter, so can target both iOS and Android with one codebase
 2. All data is stored locally, only minimal data is shared when required
 
-<img src="docs/screenshot.jpg" height="256px" />
+<img src="docs/homepage.jpg" height="256px" />
 
 Roadmap
 ---
