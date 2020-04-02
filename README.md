@@ -33,3 +33,7 @@ the apps for Bluetooth.
 2. The plan is to register this app as a Bluetooth peripheral which advertises
 a UUID. Other phones, scan this advertisement and update the UUID
 
+# TODO
+1. Localization
+2. Design bits
+3. Auth
