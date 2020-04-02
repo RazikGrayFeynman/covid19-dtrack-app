@@ -11,6 +11,8 @@ app to aid the contact tracing process. Some of the salient features are -
 1. Built in Flutter, so can target both iOS and Android with one codebase
 2. All data is stored locally, only minimal data is shared when required
 
+<img src="docs/screenshot.jpg" height="256px" />
+
 Roadmap
 ---
 
@@ -36,4 +38,5 @@ a UUID. Other phones, scan this advertisement and update the UUID
 # TODO
 1. Localization
 2. Design bits
-3. Auth
+3. Location data
+4. Auth

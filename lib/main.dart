@@ -185,7 +185,7 @@ class LoginPageState extends State<LoginPage> {
               Padding(child: Text('Please authenticate', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)), padding: EdgeInsets.only(top: 16)),
               Padding(child: Text('The phone number is not stored.'), padding: EdgeInsets.all(4)),
               Icon(Icons.person, size: 72),
-              Padding(padding: EdgeInsets.all(16), child: Form(
+              /*Padding(padding: EdgeInsets.all(16), child: Form(
                 key: _formKey,
                 child: Center(
                   child: Column(
@@ -199,13 +199,12 @@ class LoginPageState extends State<LoginPage> {
                     ]
                   )
                 )
-              )),
+              )),*/
               RaisedButton(
                 child: _loginInProgress ? Text('Logging in...') : Text('Login'),
                 onPressed: _loginInProgress ? null : () async {
                 setState(() => _loginInProgress = true);
                 _formKey.currentState.save();
-                print(_phoneNumber);
                 var prefs = await SharedPreferences.getInstance();
                 prefs.setBool('loggedIn', true);
                 prefs.setBool('firstTime', false);
