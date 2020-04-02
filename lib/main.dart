@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'services.dart';
@@ -169,16 +168,43 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  String _phoneNumber;
+  bool _loginInProgress = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Center(child: FractionallySizedBox(
         widthFactor: 1,
-        heightFactor: 0.5,
+        heightFactor: 0.75,
         child: Container(
           child: Column(
             children: <Widget>[
-              RaisedButton(child: Text('Login'), onPressed: () async {
+              Padding(child: Text('Please authenticate', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)), padding: EdgeInsets.only(top: 16)),
+              Padding(child: Text('The phone number is not stored.'), padding: EdgeInsets.all(4)),
+              Icon(Icons.person, size: 72),
+              Padding(padding: EdgeInsets.all(16), child: Form(
+                key: _formKey,
+                child: Center(
+                  child: Column(
+                    children: <Widget>[
+                      TextFormField(
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(labelText: 'Phone Number'),
+                        onSaved: (v) => _phoneNumber = v,
+                        enabled: !_loginInProgress
+                      )
+                    ]
+                  )
+                )
+              )),
+              RaisedButton(
+                child: _loginInProgress ? Text('Logging in...') : Text('Login'),
+                onPressed: _loginInProgress ? null : () async {
+                setState(() => _loginInProgress = true);
+                _formKey.currentState.save();
+                print(_phoneNumber);
                 var prefs = await SharedPreferences.getInstance();
                 prefs.setBool('loggedIn', true);
                 prefs.setBool('firstTime', false);
